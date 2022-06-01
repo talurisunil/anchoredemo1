@@ -1,22 +1,35 @@
-name: Container Image CI
-on: [push]
+name: "[Demo] Run Scan Action"
+
+on: [push, pull_request]
+
 jobs:
-  build:
+  test-image:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build the Container image
-        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
-           
-      - uses: anchore/scan-action@v3
-        id: scan
+      - uses: ./
         with:
-          
-          image: "localbuild/testimage:latest"
-          fail-build: false 
-          acs-report-enable: true
-      - name: upload Anchore scan SARIF report
-        uses: github/codeql-action/upload-sarif@v1
+          image: "alpine:latest"
+          debug: true
+          fail-build: false
+
+  test-directory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
         with:
-         path: "tests"
-               
+          path: "tests"
+          debug: true
+          severity-cutoff: "negligible"
+          fail-build: false
+
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          sbom: tests/test_sbom.spdx.json
+          debug: true
+          fail-build: false
