@@ -21,23 +21,11 @@ jobs:
         uses: anchore/scan-action@v3
         with:
          sbom: "${{ github.event.repository.name }}-sbom.spdx.json"   
-      - name: display return
-         hosts: all
-        tasks: 
-      - name: copy and rename 
-              command mc src=/tmp/sbom-action-MoEkbI/anchoredemo-build.spdx.json dest=anchoredemo1/tests/
-        register: output
-      - debug: var=output  
-          
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-           username: talurisunil99
-           password: e29daf23-94f0-4936-be66-ae05910008ce
-      -
-        name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: talurisunil99/anchordemo:testimage1
+         name: AnchoreReports
+         path: ./.github/workflows/tests/
           
+  
+      
